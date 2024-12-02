@@ -3,4 +3,4 @@ altair
 ibis[duckdb]
 leafmap
 maplibre
-
+minio

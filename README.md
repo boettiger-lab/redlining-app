@@ -1,5 +1,5 @@
 ---
-title: Streamlit Demo
+title: Redlining GBIF
 emoji: 🌍
 colorFrom: yellow
 colorTo: indigo

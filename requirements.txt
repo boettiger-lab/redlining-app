@@ -1,0 +1,6 @@
+streamlit
+altair
+ibis-duckdb
+leafmap
+maplibre
+

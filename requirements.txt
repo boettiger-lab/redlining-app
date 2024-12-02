@@ -1,6 +1,6 @@
 streamlit
 altair
-ibis-duckdb
+ibis[duckdb]
 leafmap
 maplibre
 

@@ -161,7 +161,7 @@ if submitted:
     layer = HexagonLayer(url, v_scale)
 
     
-    m = leafmap.Map(style= terrain_style, center=[-120, 37.6], zoom=2, pitch=35, bearing=10)
+    m = leafmap.Map(style=terrain_styling(), center=[-120, 37.6], zoom=2, pitch=35, bearing=10)
     if gdf is not None:
         m.add_gdf(gdf[[gdf.geometry.name]], "fill", paint = {"fill-opacity": 0.2}) # adds area of interest & zooms in
     m.add_pmtiles(mappinginequality, style=redlines, visible=True, opacity = 0.9,  fit_bounds=False)

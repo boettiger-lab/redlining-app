@@ -63,7 +63,7 @@ def set_secrets(con):
     if secret is None:
         secret = st.secrets["MINIO_SECRET"]
 
-    ket = os.getenv("MINIO_KEY")
+    key = os.getenv("MINIO_KEY")
     if key is None:
         key = st.secrets["MINIO_KEY"]
     
@@ -136,40 +136,45 @@ def DeckGlobe(layer):
     )
     return deck
 
-key = st.secrets['MAPTILER_KEY']
-terrain_style = {
-    "version": 8,
-    "sources": {
-        "osm": {
-            "type": "raster",
-            "tiles": ["https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}.png"],
-            "tileSize": 256,
-            "attribution": "&copy; National Geographic",
-            "maxzoom": 19,
+
+def terrain_styling():
+    maptiler_key = os.getenv("MAPTILER_KEY")
+    if maptiler_key is None:
+        maptiler_key = st.secrets["MAPTILER_KEY"]    
+    terrain_style = {
+        "version": 8,
+        "sources": {
+            "osm": {
+                "type": "raster",
+                "tiles": ["https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}.png"],
+                "tileSize": 256,
+                "attribution": "&copy; National Geographic",
+                "maxzoom": 19,
+            },
+            "terrainSource": {
+                "type": "raster-dem",
+                "url": f"https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key={maptiler_key}",
+                "tileSize": 256,
+            },
+            "hillshadeSource": {
+                "type": "raster-dem",
+                "url": f"https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key={maptiler_key}",
+                "tileSize": 256,
+            },
         },
-        "terrainSource": {
-            "type": "raster-dem",
-            "url": f"https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key={key}",
-            "tileSize": 256,
-        },
-        "hillshadeSource": {
-            "type": "raster-dem",
-            "url": f"https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key={key}",
-            "tileSize": 256,
-        },
-    },
-    "layers": [
-        {"id": "osm", "type": "raster", "source": "osm"},
-        {
-            "id": "hills",
-            "type": "hillshade",
-            "source": "hillshadeSource",
-            "layout": {"visibility": "visible"},
-            "paint": {"hillshade-shadow-color": "#473B24"},
-        },
-    ],
-    "terrain": {"source": "terrainSource", "exaggeration": .1},
-}
+        "layers": [
+            {"id": "osm", "type": "raster", "source": "osm"},
+            {
+                "id": "hills",
+                "type": "hillshade",
+                "source": "hillshadeSource",
+                "layout": {"visibility": "visible"},
+                "paint": {"hillshade-shadow-color": "#473B24"},
+            },
+        ],
+        "terrain": {"source": "terrainSource", "exaggeration": .1},
+    }
+    return terrain_style
 ####
 
 

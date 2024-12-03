@@ -3,7 +3,7 @@ title: Redlining GBIF
 emoji: 🌍
 colorFrom: yellow
 colorTo: indigo
-sdk: streamlit
+sdk: docker
 pinned: false
 license: bsd-2-clause
 ---

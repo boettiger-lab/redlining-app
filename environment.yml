@@ -1,0 +1,12 @@
+name: base 
+channels:
+  - conda-forge
+dependencies:
+  - ibis-duckdb
+  - leafmap
+  - altair
+  - minio
+  - streamlit
+  - pip
+  - pip:
+      - maplibre

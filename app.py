@@ -32,7 +32,7 @@ config = {
     "City": {
         "names": con.read_parquet("s3://public-gbif/app/city_names.parquet").select("name").execute(),
         "index": 183,
-        "zoom": 11,
+        "zoom": 10,
         "vertical": 0.1,
         "rank_index": 2,
         "taxa": "Aves",
@@ -164,7 +164,6 @@ if nunique:
     count = "unique " + distinct_taxa
 
 
-st.write(distinct_taxa)
 
 mapcol, chartcol = st.columns([4,1])
 
@@ -186,4 +185,27 @@ if submitted:
     with chartcol:
         st.markdown("Mean number of " + count + " by redline grade")
         bar_chart(gdf_name, rank, taxa, zoom, distinct_taxa = distinct_taxa)
+
+
+st.divider()
+
+'''
+
+## Credits
+
+App developed by Carl Boettiger & Diego Soto, UC Berkeley (2024).
+
+### Data Sources
+
+- Global Biodiversity Information Facility (GBIF) Species Occurrences snapshot on 2024-10-01. Copyright: Public Domain.  Visualization based on pre-computed H3 cell values for all of GBIF, hosted on Source.Coop, <https://source.coop/repositories/cboettig/gbif> as GeoParquet and PMTiles.
+
+- Historical Redlining Data from the Mapping Inequality Project, <https://dsl.richmond.edu/panorama/redlining/>.
+
+### Software
+
+- All open-source software implementation, hosted on HuggingFace Spaces.
+- Built with `duckdb`, `maplibre`, `leafmap`, and `streamlit`.
+- Source code at <https://github.com/boettiger-lab/redlining-app>
+
+'''
 

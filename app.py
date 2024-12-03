@@ -179,8 +179,6 @@ if submitted:
         gdf = get_polygon(gdf_name, area_source, con)
         url = compute_hexes(gdf, gdf_name, rank, taxa, zoom, distinct_taxa = distinct_taxa)
         layer = HexagonLayer(url, v_scale)
-        digest = hashlib.md5(str(layer).encode()).hexdigest()
-        print(digest)
 
         m = leafmap.Map(style=terrain_styling(), center=[-120, 37.6], zoom=2, pitch=35, bearing=10)
         if gdf is not None:

@@ -186,7 +186,6 @@ def unique_path(gdf_name, rank, taxa, zoom, distinct_taxa):
     #gdf_hash = str(pd.util.hash_pandas_object(gdf).sum())
     text = [gdf_name, rank, taxa, str(zoom), distinct_taxa]
     sig = "-".join(text)
-    print(sig)
     sig = hashlib.sha1(sig.encode()).hexdigest()
     dest = "cache/gbif_" + sig + ".json"
     return dest

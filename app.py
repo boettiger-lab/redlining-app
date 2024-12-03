@@ -98,6 +98,9 @@ def compute_hexes(_gdf, gdf_name, rank, taxa, zoom, distinct_taxa = ""):
            .filter(_[rank] == taxa)
           )
 
+    if gdf_name != "All":
+        sel = sel.filter(_.city == gdf_name)
+
     sel = (sel
            .rename(hex = "h" + str(zoom)) # h3 == 41,150 hexes.  h5 == 2,016,830 hexes
            .group_by(_.hex)
@@ -189,7 +192,7 @@ if submitted:
         
     with chartcol:
         bar_chart(gdf_name, rank, taxa, zoom, distinct_taxa = distinct_taxa)
-        st.markdown("Mean density of " + count + " by redline grade, count per hectre")
+        st.markdown(f"Mean density of {count} by redline grade, count per hectre for {gdf_name}")
 
 
     

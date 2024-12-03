@@ -192,7 +192,9 @@ st.divider()
 '''
 ## Overview
 
-Select an individual city or choose "All" to show all 319 cities in the Mapping Inequality Project.  You can set arbitrary taxonomic filters on what GBIF data is displayed -- e.g. show all of Aves or just show _Canis latrans_. Toggle `unique taxa only` to show either all occurrences or just unique species (or other rank) counts.  The map will show all counts at the selected 'H3 cell' resolution, while the chart on the left shows aggregate counts by redlining grade.  Note that only GBIF data inside graded sectors of the Mapping Inequality maps are shown, occurrences outside these areas have been cropped.  You may need to adjust the vertical scale of map hexes. After making your selections, hit **Go**!  Map layers may take a while to load on slower networks.
+Select an individual city or choose "All" to show all 319 cities in the Mapping Inequality Project.  You can set arbitrary taxonomic filters on what GBIF data is displayed -- e.g. show all of Aves or just show _Canis latrans_. Toggle `unique taxa only` to show either all occurrences or just unique species (or other rank) counts.  The map will show all counts at the selected 'H3 cell' resolution, while the chart on the left shows aggregate counts by redlining grade.  Note that only GBIF data inside graded sectors of the Mapping Inequality maps are shown, occurrences outside these areas have been cropped.  You may need to adjust the vertical scale of map hexes. After making your selections, hit **Go**!  
+
+Map layers may take a while to load on slower networks.  Scroll to zoom, ctrl+click to pivot camera.
 
 
 ## Credits

@@ -24,7 +24,7 @@ def set_source_secrets(con):
     if secret is None:
         secret = st.secrets["SOURCE_SECRET"]
 
-    ket = os.getenv("SOURCE_KEY")
+    key = os.getenv("SOURCE_KEY")
     if key is None:
         key = st.secrets["SOURCE_KEY"]
     
@@ -110,32 +110,6 @@ def HexagonLayer(data, v_scale = 1):
             get_fill_color="[255 - value, 255, value]",
             )
 
-def DeckGlobe(layer):
-    view_state = pdk.ViewState(latitude=51.47, longitude=0.45, zoom=0)
-    view = pdk.View(type="_GlobeView", controller=True, width=1000, height=600)
-    COUNTRIES = "https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_admin_0_scale_rank.geojson"
-    
-    layers = [
-        pdk.Layer(
-            "GeoJsonLayer",
-            id="base-map",
-            data=COUNTRIES,
-            stroked=False,
-            filled=True,
-            get_fill_color=[200, 200, 200],
-        ),
-        layer,
-    ]
-    deck = pdk.Deck(
-        views=[view],
-        initial_view_state=view_state,
-        layers=layers,
-        map_provider=None,
-        # Note that this must be set for the globe to be opaque
-        parameters={"cull": True},
-    )
-    return deck
-
 
 def terrain_styling():
     maptiler_key = os.getenv("MAPTILER_KEY")
@@ -192,7 +166,6 @@ def get_city(name = "Oakland", con = ibis.duckdb.connect()):
     return gdf 
 
 
-@st.cache_data
 def get_polygon(name = "New Haven", 
                 source = "City",
                 _con = ibis.duckdb.connect()):
@@ -211,9 +184,10 @@ import hashlib
 import pandas as pd
 def unique_path(gdf_name, rank, taxa, zoom, distinct_taxa):
     #gdf_hash = str(pd.util.hash_pandas_object(gdf).sum())
-    text = gdf_name + rank + taxa + str(zoom) + distinct_taxa
-    hash_object = hashlib.sha1(text.encode())
-    sig = hash_object.hexdigest()
+    text = [gdf_name, rank, taxa, str(zoom), distinct_taxa]
+    sig = "-".join(text)
+    print(sig)
+    sig = hashlib.sha1(sig.encode()).hexdigest()
     dest = "cache/gbif_" + sig + ".json"
     return dest
 

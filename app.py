@@ -7,6 +7,7 @@ from utilities import *
 import leafmap.maplibregl as leafmap
 import requests
 import geopandas as gpd
+import altair as alt
 
 st.set_page_config(page_title="Redlining & GBIF", layout="wide")
 st.title("Redlining & GBIF")
@@ -84,7 +85,6 @@ with st.form("my_form"):
 @st.cache_data
 def compute_hexes(_gdf, gdf_name, rank, taxa, zoom, distinct_taxa = ""):
 
-    # FIXME check if dest exists in cache
     dest = unique_path(gdf_name, rank, taxa, zoom, distinct_taxa)
     bucket = "public-gbif"
     url = base_url + f"/{bucket}/" + dest
@@ -93,7 +93,10 @@ def compute_hexes(_gdf, gdf_name, rank, taxa, zoom, distinct_taxa = ""):
     if response.status_code != 404:
         return url
 
-    sel = con.read_parquet("s3://public-gbif/app/redlined_cities_gbif.parquet")
+    sel = (con
+           .read_parquet("s3://public-gbif/app/redlined_cities_gbif.parquet")
+           .filter(_[rank] == taxa)
+          )
 
     sel = (sel
            .rename(hex = "h" + str(zoom)) # h3 == 41,150 hexes.  h5 == 2,016,830 hexes
@@ -119,13 +122,14 @@ def compute_hexes(_gdf, gdf_name, rank, taxa, zoom, distinct_taxa = ""):
 
 
 
-import altair as alt
-
 @st.cache_data
 def bar_chart(gdf_name, rank, taxa, zoom, distinct_taxa = ""):
     sel = con.read_parquet("s3://public-gbif/app/redlined_cities_gbif.parquet")
-    sel = sel.filter(_[rank] == taxa)
-
+    sel = (sel
+           .filter(_[rank] == taxa)
+           .mutate(geom = _.geom.convert('EPSG:4326', 'ESRI:54009'))
+           .mutate(area = _.geom.area())
+          )
     if gdf_name != "All":
         sel = sel.filter(_.city == gdf_name)
 
@@ -136,7 +140,7 @@ def bar_chart(gdf_name, rank, taxa, zoom, distinct_taxa = ""):
     else:
         sel = sel.agg(n = _.count(), area = _.area.sum())
     sel = (sel
-      .mutate(density = _.n /_.area)
+      .mutate(density = _.n /_.area * 10000) # per hectre
       .group_by(_.grade)
       .agg(mean = _.density.mean(),sd = _.density.std())
       .order_by(_.mean.desc())
@@ -168,26 +172,29 @@ if nunique:
 mapcol, chartcol = st.columns([4,1])
 
 if submitted:
-    gdf = get_polygon(gdf_name, area_source, con)
-    url = compute_hexes(gdf, gdf_name, rank, taxa, zoom, distinct_taxa = distinct_taxa)
-    layer = HexagonLayer(url, v_scale)
+    with mapcol:
+        gdf = get_polygon(gdf_name, area_source, con)
+        url = compute_hexes(gdf, gdf_name, rank, taxa, zoom, distinct_taxa = distinct_taxa)
+        layer = HexagonLayer(url, v_scale)
+        digest = hashlib.md5(str(layer).encode()).hexdigest()
+        print(digest)
+
+        m = leafmap.Map(style=terrain_styling(), center=[-120, 37.6], zoom=2, pitch=35, bearing=10)
+        if gdf is not None:
+            m.add_gdf(gdf[[gdf.geometry.name]], "fill", paint = {"fill-opacity": 0.2}) # adds area of interest & zooms in
+        m.add_pmtiles(mappinginequality, style=redlines, visible=True, opacity = 0.9,  fit_bounds=False)
+        m.add_deck_layers([layer])
+        m.add_layer_control()
+        m.to_streamlit()
+        
+    with chartcol:
+        bar_chart(gdf_name, rank, taxa, zoom, distinct_taxa = distinct_taxa)
+        st.markdown("Mean density of " + count + " by redline grade, count per hectre")
+
 
     
-    m = leafmap.Map(style=terrain_styling(), center=[-120, 37.6], zoom=2, pitch=35, bearing=10)
-    if gdf is not None:
-        m.add_gdf(gdf[[gdf.geometry.name]], "fill", paint = {"fill-opacity": 0.2}) # adds area of interest & zooms in
-    m.add_pmtiles(mappinginequality, style=redlines, visible=True, opacity = 0.9,  fit_bounds=False)
-    m.add_deck_layers([layer])
-    m.add_layer_control()
-
-    with mapcol:
-        m.to_streamlit()
-    with chartcol:
-        st.markdown("Mean number of " + count + " by redline grade")
-        bar_chart(gdf_name, rank, taxa, zoom, distinct_taxa = distinct_taxa)
-
-
 st.divider()
+
 
 '''
 ## Overview

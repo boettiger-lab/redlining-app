@@ -74,9 +74,9 @@ with st.form("my_form"):
     with col4: 
         st.markdown('''
         #### 🔎 Set spatial resolution
-        See [H3 cell size by zoom](https://h3geo.org/docs/core-library/restable/#cell-areas)
+        See [H3 cell size by zoom level](https://h3geo.org/docs/core-library/restable/#cell-areas)
         ''')
-        zoom = st.slider("H3 resolution", min_value=1, max_value=11, value = default["zoom"])
+        zoom = st.slider("H3 zoom", min_value=1, max_value=11, value = default["zoom"])
         v_scale = st.number_input("vertical scale", min_value = 0.0, value = default["vertical"])
 
     submitted = st.form_submit_button("Go")
@@ -131,7 +131,7 @@ def bar_chart(gdf_name, rank, taxa, zoom, distinct_taxa = ""):
 
     sel = sel.group_by(_.city, _.grade)
 
-    if distinct_taxa != "": # count n unique taxa
+    if distinct_taxa: # count n unique taxa
         sel = sel.agg(n = _[distinct_taxa].nunique(), area = _.area.sum()) 
     else:
         sel = sel.agg(n = _.count(), area = _.area.sum())
@@ -163,6 +163,9 @@ count = "occurrences"
 if nunique:
     count = "unique " + distinct_taxa
 
+
+st.write(distinct_taxa)
+
 mapcol, chartcol = st.columns([4,1])
 
 if submitted:
@@ -182,5 +185,5 @@ if submitted:
         m.to_streamlit()
     with chartcol:
         st.markdown("Mean number of " + count + " by redline grade")
-        bar_chart(gdf_name, rank, taxa, zoom, distinct_taxa = "")
+        bar_chart(gdf_name, rank, taxa, zoom, distinct_taxa = distinct_taxa)
 

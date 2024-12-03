@@ -36,6 +36,7 @@ config = {
         "vertical": 0.1,
         "rank_index": 2,
         "taxa": "Aves",
+        "unique_rank_index": 6,
     },
      "All": {
         "names": ["All"],
@@ -44,6 +45,7 @@ config = {
         "vertical": 1.0,
         "rank_index": 2,
         "taxa": "Aves",
+        "unique_rank_index": 6,
     }
 }
 
@@ -60,10 +62,14 @@ with st.form("my_form"):
     with col3:
         st.markdown("#### 🐦 Select taxonomic groups")
         ## add support for multiple taxa!
-        rank = st.selectbox("Taxonomic Rank", options=taxonomic_ranks, index = default["rank_index"])
+        rank = st.selectbox("Taxonomic Rank",
+                            options=taxonomic_ranks, 
+                            index = default["rank_index"])
         taxa = st.text_input("taxa", default["taxa"])
         if nunique:
-            distinct_taxa = st.selectbox("Count only unique occurrences by:", options=taxonomic_ranks, index = default["rank_index"])
+            distinct_taxa = st.selectbox("Count only unique occurrences by:",
+                                         options=taxonomic_ranks,
+                                         index = default["unique_rank_index"])
 
     with col4: 
         st.markdown('''
@@ -122,10 +128,14 @@ def bar_chart(gdf_name, rank, taxa, zoom, distinct_taxa = ""):
 
     if gdf_name != "All":
         sel = sel.filter(_.city == gdf_name)
-    
-    sel = (sel
-      .group_by(_.city, _.grade)
-      .agg(n = _.count(), area = _.area.sum())
+
+    sel = sel.group_by(_.city, _.grade)
+
+    if distinct_taxa != "": # count n unique taxa
+        sel = sel.agg(n = _[distinct_taxa].nunique(), area = _.area.sum()) 
+    else:
+        sel = sel.agg(n = _.count(), area = _.area.sum())
+    sel = (sel.
       .mutate(density = _.n /_.area)
       .group_by(_.grade)
       .agg(mean = _.density.mean(),sd = _.density.std())

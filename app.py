@@ -101,7 +101,7 @@ def compute_hexes(_gdf, gdf_name, rank, taxa, zoom, distinct_taxa = ""):
            )
 
     if distinct_taxa != "": # count n unique taxa
-        sel = sel.agg(n = _[distinct_taxa].nunique()) 
+        sel = sel.agg(n = _[distinct_taxa].nunique())
     else: # count occurrences
         sel = sel.agg(n = _.count())
 
@@ -135,7 +135,7 @@ def bar_chart(gdf_name, rank, taxa, zoom, distinct_taxa = ""):
         sel = sel.agg(n = _[distinct_taxa].nunique(), area = _.area.sum()) 
     else:
         sel = sel.agg(n = _.count(), area = _.area.sum())
-    sel = (sel.
+    sel = (sel
       .mutate(density = _.n /_.area)
       .group_by(_.grade)
       .agg(mean = _.density.mean(),sd = _.density.std())

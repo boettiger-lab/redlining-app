@@ -19,14 +19,20 @@ def h3_cell_to_boundary_wkt	(array) -> str:
 # Configure write-access to source.coop
 import streamlit as st
 def set_source_secrets(con):
-    source_key = st.secrets["SOURCE_KEY"]
-    source_secret = st.secrets["SOURCE_SECRET"]
+
+    secret = os.getenv("SOURCE_SECRET")
+    if secret is None:
+        secret = st.secrets["SOURCE_SECRET"]
+
+    ket = os.getenv("SOURCE_KEY")
+    if key is None:
+        key = st.secrets["SOURCE_KEY"]
     
     query=   f'''
     CREATE OR REPLACE SECRET source (
         TYPE S3,
-        KEY_ID '{source_key}',
-        SECRET '{source_secret}',
+        KEY_ID '{key}',
+        SECRET '{secret}',
         ENDPOINT 'data.source.coop',
         URL_STYLE 'path',
         SCOPE 's3://cboettig'
@@ -52,14 +58,20 @@ def set_aws_secrets(con):
     con.raw_sql(query)
 
 # or write access to minio
-def set_secrets(con):   
-    minio_key = st.secrets["MINIO_KEY"]
-    minio_secret = st.secrets["MINIO_SECRET"]
+def set_secrets(con):
+    secret = os.getenv("MINIO_SECRET")
+    if secret is None:
+        secret = st.secrets["MINIO_SECRET"]
+
+    ket = os.getenv("MINIO_KEY")
+    if key is None:
+        key = st.secrets["MINIO_KEY"]
+    
     query=   f'''
     CREATE OR REPLACE SECRET secret2 (
         TYPE S3,
-        KEY_ID '{minio_key}',
-        SECRET '{minio_secret}',
+        KEY_ID '{key}',
+        SECRET '{secret}',
         ENDPOINT 'minio.carlboettiger.info',
         URL_STYLE 'path',
         SCOPE 's3://public-gbif/'

@@ -125,7 +125,7 @@ def compute_hexes(_gdf, gdf_name, rank, taxa, zoom, distinct_taxa = ""):
 
 
 
-@st.cache_data
+# @st.cache_data
 def bar_chart(gdf_name, rank, taxa, zoom, distinct_taxa = ""):
     sel = con.read_parquet("s3://public-gbif/app/redlined_cities_gbif.parquet")
     sel = (sel

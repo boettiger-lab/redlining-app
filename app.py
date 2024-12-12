@@ -150,7 +150,7 @@ def bar_chart(gdf_name, rank, taxa, zoom, distinct_taxa = ""):
     )
     
     plt = alt.Chart(sel.execute()).mark_bar().encode(x = "grade", y = "mean")
-    return st.altair_chart(plt)
+    return st.altair_chart(plt, use_container_width=True)
 
 mappinginequality = 'https://data.source.coop/cboettig/us-boundaries/mappinginequality.pmtiles'
 
@@ -172,7 +172,7 @@ if nunique:
 
 
 
-mapcol, chartcol = st.columns([4,1])
+mapcol, chartcol = st.columns([3,1])
 
 if submitted:
     with mapcol:
@@ -189,8 +189,9 @@ if submitted:
         m.to_streamlit()
         
     with chartcol:
+        st.markdown(f"{gdf_name}")
         bar_chart(gdf_name, rank, taxa, zoom, distinct_taxa = distinct_taxa)
-        st.markdown(f"Mean density of {count} by redline grade, count per hectre for {gdf_name}")
+        st.markdown(f"Mean density of {count} by redline grade, in counts per hectre")
 
 
     
